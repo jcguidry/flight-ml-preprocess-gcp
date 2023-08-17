@@ -16,7 +16,7 @@ jobs:
     - name: Set up Google Cloud SDK
       uses: google-github-actions/auth@v1
       with:
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        service_account: ${{ secrets.GCP_SA_KEY }}
         project_id: aia-ds-accelerator-flight-1
         
     - name: Upload script to GCS
