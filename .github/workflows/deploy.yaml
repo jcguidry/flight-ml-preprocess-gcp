@@ -1,0 +1,31 @@
+name: Deploy Dataproc Job
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/auth@v1
+      with:
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: aia-ds-accelerator-flight-1
+        
+    - name: Upload script to GCS
+      run: |
+        gsutil cp src/flights_preprocess.py gs://flight-dev/DE/
+
+    # - name: Submit Dataproc job
+    #   run: |
+    #     gcloud dataproc jobs submit pyspark \
+    #       --cluster=your-cluster-name \
+    #       --region=your-region \
+    #       gs://your-bucket/your-path/your_notebook.py
