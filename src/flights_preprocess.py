@@ -51,19 +51,19 @@ DataFrame.pipe = pipe
 
 
 
-# spark = (SparkSession \
-#   .builder \
-#   .appName("sesh1") \
-#   .config("spark.master", "local[*]") \
-#   .config("spark.executor.memory", "24g") \
-#   .config("spark.driver.memory", "6g") \
-#   .config("spark.driver.maxResultSize", "4g") \
-#   # .config("spark.debug.maxToStringFields",5000)\
-#   .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-#   .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-#   .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") \
-#   .getOrCreate()
-# )
+spark = (SparkSession 
+  .builder 
+  .appName("sesh1") 
+  #.config("spark.master", "local[*]") 
+  #.config("spark.executor.memory", "24g") 
+  #.config("spark.driver.memory", "6g") 
+  #.config("spark.driver.maxResultSize", "4g") 
+  #.config("spark.debug.maxToStringFields",5000)
+  .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
+  .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") 
+  .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") 
+  .getOrCreate()
+)
 
 # spark.conf.set("spark.sql.repl.eagerEval.enabled",True)
 
