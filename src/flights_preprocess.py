@@ -57,8 +57,8 @@ spark = (SparkSession
   .config("spark.master", "local") #local[*]
 #   .config("spark.executor.memory", "1g") # 24g 
 #   .config("spark.driver.memory", "1g") # 6g
-  .config("spark.default.parallelism", 1)
-  .config("spark.sql.shuffle.partitions", 1)
+  .config("spark.default.parallelism", 10)
+  .config("spark.sql.shuffle.partitions", 10)
   .config("spark.memory.fraction", 0.1)
   .config("spark.memory.storageFraction", 0.5)
 
@@ -66,7 +66,7 @@ spark = (SparkSession
   #.config("spark.debug.maxToStringFields",5000)
   .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
   .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") 
-  .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") 
+#   .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") 
   .getOrCreate()
 )
 
