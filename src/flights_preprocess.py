@@ -54,13 +54,13 @@ DataFrame.pipe = pipe
 spark = (SparkSession 
   .builder 
   .appName("sesh1") 
-  #.config("spark.master", "local[*]") 
-  .config("spark.executor.memory", "2g") # 24g 
-  .config("spark.driver.memory", "2g") # 6g
+  .config("spark.master", "local[*]") 
+  .config("spark.executor.memory", "1g") # 24g 
+  .config("spark.driver.memory", "1g") # 6g
   .config("spark.default.parallelism", 1)
   .config("spark.sql.shuffle.partitions", 1)
-  #.config("spark.memory.fraction", 0.1)
-  #.config("spark.memory.storageFraction", 0.5)
+  .config("spark.memory.fraction", 0.1)
+  .config("spark.memory.storageFraction", 0.5)
 
   #.config("spark.driver.maxResultSize", "4g") 
   #.config("spark.debug.maxToStringFields",5000)
