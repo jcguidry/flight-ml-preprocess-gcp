@@ -55,8 +55,13 @@ spark = (SparkSession
   .builder 
   .appName("sesh1") 
   #.config("spark.master", "local[*]") 
-  #.config("spark.executor.memory", "24g") 
-  #.config("spark.driver.memory", "6g") 
+  .config("spark.executor.memory", "2g") # 24g 
+  .config("spark.driver.memory", "2g") # 6g
+  .config("spark.default.parallelism", 1)
+  .config("spark.sql.shuffle.partitions", 1)
+  #.config("spark.memory.fraction", 0.1)
+  #.config("spark.memory.storageFraction", 0.5)
+
   #.config("spark.driver.maxResultSize", "4g") 
   #.config("spark.debug.maxToStringFields",5000)
   .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
@@ -205,6 +210,7 @@ if enable_ingest: # loads raw JSONs to Delta Table
                  .schema(schema_raw)
                  .option("encoding", "UTF-8")
                  .option("multiLine", True)
+                 .option("maxFilesPerTrigger", 1)
                  .json(gcs_path_raw)
 
             .pipe(ingest_data_processing) # processing here
@@ -292,6 +298,7 @@ if enable_processed: # loads raw JSONs to Delta Table
         df_proc = (
             spark.readStream
                  .format("delta")
+                 .option("maxFilesPerTrigger", 1) \
                  .load(gcs_path_ingested_stream)
 
             .pipe(flights_processing, streaming=True) # processing here
