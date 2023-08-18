@@ -51,24 +51,38 @@ DataFrame.pipe = pipe
 
 
 
-spark = (SparkSession 
-  .builder 
-  .appName("sesh1") 
-  .config("spark.master", "local") #local[*]
-#   .config("spark.executor.memory", "1g") # 24g 
-#   .config("spark.driver.memory", "1g") # 6g
-  .config("spark.default.parallelism", 10)
-  .config("spark.sql.shuffle.partitions", 10)
-  .config("spark.memory.fraction", 0.1)
-  .config("spark.memory.storageFraction", 0.5)
+if debug:
+    
+    # Debugging config has more resources
+    spark = (SparkSession 
+    .builder 
+    .appName("debug") 
+    .config("spark.master", "local[*]") 
+    .config("spark.executor.memory", "24g") 
+    .config("spark.driver.memory", "6g") 
 
-  #.config("spark.driver.maxResultSize", "4g") 
-  #.config("spark.debug.maxToStringFields",5000)
-  .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
-  .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") 
-#   .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") 
-  .getOrCreate()
-)
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") 
+    # .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") 
+    .getOrCreate()
+    )
+else:
+    spark = (SparkSession 
+    .builder 
+    .appName("prod") 
+    .config("spark.master", "local") #local[*]
+    .config("spark.sql.adaptive.enabled", "false") 
+    .config("spark.default.parallelism", 10)
+    .config("spark.sql.shuffle.partitions", 10)
+    .config("spark.memory.fraction", 0.1)
+    .config("spark.memory.storageFraction", 0.5)
+    
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") 
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") 
+    #   .config("spark.jars.packages", "io.delta:delta-core_2.12:2.1.1") 
+    .getOrCreate()
+    )
+
 
 # spark.conf.set("spark.sql.repl.eagerEval.enabled",True)
 
