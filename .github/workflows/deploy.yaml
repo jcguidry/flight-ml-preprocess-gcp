@@ -27,7 +27,7 @@ jobs:
 
     - name: Submit Dataproc job
       run: |
-      gcloud dataproc jobs submit pyspark gs://flight-dev/DE/flights_preprocess.py \
-      --cluster=cluster-mini-1 --region=us-east1 \
-      --properties=spark.executor.instances=1,spark.executor.cores=1,spark.executor.memory=1g,spark.driver.memory=1g 
+        gcloud dataproc jobs submit pyspark gs://flight-dev/DE/flights_preprocess.py \
+        --cluster=cluster-mini-1 --region=us-east1 \
+        --properties=spark.executor.instances=1,spark.executor.cores=1,spark.executor.memory=1g,spark.driver.memory=1g 
 
