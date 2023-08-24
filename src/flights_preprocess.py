@@ -29,7 +29,7 @@ gcs_path_processed_stream = f'{gcs_path_processed}-stream'
 
 #############
 
-partition_fields = ['crt_ts_year','crt_ts_month','crt_ts_day','crt_ts_hour']
+partition_fields = ['crt_ts_date','crt_ts_hour','ident']
 
 #############
 
@@ -176,13 +176,16 @@ def ingest_data_processing(df):
     
     def cast_unix_to_timestamp_types(df):
         # Cast Unix to Timestamp Types
-        date_format = "yyyy-MM-dd HH:mm:ss"
-        return (
-            df.withColumn('crt_ts', from_unixtime(col("crt_ts")/1000 , date_format))
-              .withColumn('last_run_ts', from_unixtime(col("last_run_ts")/1000 , date_format))
-              .withColumn('last_scheduled_out_ts', from_unixtime(col("last_scheduled_out_ts")/1000 , date_format))
-        )
+        date_format = "yyyy-MM-dd"
+        datetime_format = "yyyy-MM-dd HH:mm:ss"
         
+        return (
+            df.withColumn('crt_ts_date', from_unixtime(col("crt_ts")/1000 , date_format))
+              .withColumn('crt_ts', from_unixtime(col("crt_ts")/1000 , datetime_format))
+              .withColumn('last_run_ts', from_unixtime(col("last_run_ts")/1000 , datetime_format))
+              .withColumn('last_scheduled_out_ts', from_unixtime(col("last_scheduled_out_ts")/1000 , datetime_format))
+        )
+
     df = cast_unix_to_timestamp_types(df)
     df = add_ingest_timestamp_utc(df)
     df = df.drop(*['year','month','day'])    

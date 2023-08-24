@@ -21,6 +21,16 @@ jobs:
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
 
+    - name: Create Dataproc cluster if it doesn't exist
+      run: |
+        if ! gcloud dataproc clusters describe cluster-highmem-1 --region us-east1; then
+          gcloud dataproc clusters create cluster-highmem-1 --region us-east1 \
+          --single-node --master-machine-type e2-highmem-2 --master-boot-disk-size 1000 --image-version 2.1-debian11 \
+          --max-idle 7200s --scopes 'https://www.googleapis.com/auth/cloud-platform' --project aia-ds-accelerator-flight-1 \
+          --enable-component-gateway --optional-components JUPYTER \
+          --properties spark:spark.jars.packages=io.delta:delta-core_2.12:2.1.1
+        fi
+
     - name: Upload script to GCS
       run: |
         gsutil cp src/flights_preprocess.py gs://flight-dev/DE/
@@ -28,4 +38,4 @@ jobs:
     - name: Submit Dataproc job
       run: |
         gcloud dataproc jobs submit pyspark gs://flight-dev/DE/flights_preprocess.py \
-        --cluster=cluster-mini-1 --region=us-east1 --async
+        --cluster=cluster-highmem-1 --region=us-east1 --async
