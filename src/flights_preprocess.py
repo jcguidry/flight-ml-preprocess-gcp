@@ -179,9 +179,9 @@ def ingest_data_processing(df):
         date_format = "yyyy-MM-dd"
         datetime_format = "yyyy-MM-dd HH:mm:ss"
         
-        return (
-            df.withColumn('crt_ts_date', from_unixtime(col("crt_ts")/1000 , date_format))
+        return (df
               .withColumn('crt_ts', from_unixtime(col("crt_ts")/1000 , datetime_format))
+              .withColumn('crt_ts_date', to_date(col("crt_ts")))
               .withColumn('last_run_ts', from_unixtime(col("last_run_ts")/1000 , datetime_format))
               .withColumn('last_scheduled_out_ts', from_unixtime(col("last_scheduled_out_ts")/1000 , datetime_format))
         )
