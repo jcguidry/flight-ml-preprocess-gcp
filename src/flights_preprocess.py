@@ -12,7 +12,7 @@ enable_batch = False # load it how?
 enable_stream = True
 
 debug = False # (enables batch reads only)
-
+cold_start = True # if creating both streaming tables for the first time.
 
 # I/0 Paths
 
@@ -34,6 +34,9 @@ partition_fields = ['crt_ts_date','crt_ts_hour','ident']
 #############
 
 from datetime import datetime, timedelta
+import time
+
+import subprocess
 from google.cloud import storage
 from IPython.display import display
 
@@ -49,7 +52,25 @@ def pipe(self, func, *args, **kwargs):
     return func(self, *args, **kwargs)
 DataFrame.pipe = pipe
 
+def delete_bucket(bucket_name):
+    cmd = ["gcloud", "storage", "rm", "-r", bucket_name]
 
+    try:
+        subprocess.check_call(cmd)
+        print(f"Bucket {bucket_name} deleted successfully.")
+    except subprocess.CalledProcessError:
+        print(f"Failed to delete bucket {bucket_name}.")
+
+# If creating output tables from scratch, this will erase the checkpoints.
+if cold_start:
+    steaming_out_paths = [
+        gcs_path_ingested_stream, 
+        f'{gcs_path_ingested_stream}-checkpoint',
+        gcs_path_processed_stream, 
+        f'{gcs_path_processed_stream}-checkpoint']
+
+    for bucket in steaming_out_paths:
+        delete_bucket(bucket)
 
 if debug:
     
@@ -222,6 +243,7 @@ if enable_ingest: # loads raw JSONs to Delta Table
 
 
     if enable_stream and not debug:
+
         df_raw = (
             spark.readStream
                  .schema(schema_raw)
@@ -242,6 +264,11 @@ if enable_ingest: # loads raw JSONs to Delta Table
                        .start(gcs_path_ingested_stream)
         )
         print(f'streaming to {gcs_path_ingested_stream}')
+
+        if cold_start:
+            # wait for ingested table to write records before starting processed table
+            time.sleep(45) 
+        
         # streaming_query_ingest.awaitTermination()
         
 ############################ PRE-PROCESSING LOGIC ############################
@@ -332,10 +359,9 @@ if enable_processed: # loads raw JSONs to Delta Table
         print(f'streaming to {gcs_path_processed_stream}')
         # streaming_query_proc.awaitTermination()
         
-if enable_stream:
+if enable_stream and not debug:
     if enable_ingest:
         streaming_query_ingest.awaitTermination()
     if enable_processed:
         streaming_query_proc.awaitTermination()
-
 
